@@ -1,0 +1,17 @@
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\utils\user\LogController.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\user\MemberManager.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\user\UserDao.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\impl\user\UserLogServiceImpl.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\impl\user\UserVipDaoImpl.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\entity\user\User.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\user\ShiroWebRealm.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\user\UserVipDao.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\user\UserLogDao.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\impl\user\UserDaoImpl.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\dao\impl\user\UserLogDaoImpl.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\entity\user\UserLog.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\user\UserVipService.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\impl\user\UserVipServiceImpl.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\service\user\UserLogService.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\entity\user\UserVip.java
+E:\Workspaces\lottery\modules\lottery-user\src\main\java\com\sky\modules\lottery\utils\user\MD5Utils.java

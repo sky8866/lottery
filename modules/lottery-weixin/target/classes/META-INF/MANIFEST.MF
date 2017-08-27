@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Implementation-Title: lottery-weixin
+Implementation-Version: 1.0.0
+Implementation-Vendor-Id: com.sky.modules.lottery.weixin
+Build-Jdk: 1.6.0_13
+Built-By: samsung
+Created-By: Maven Integration for Eclipse
+

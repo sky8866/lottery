@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+		default-lazy-init="true">
+
+	<description>Spring公共配置</description>
+
+ 
+
+<!-- 使用annotation 自动注册bean,并检查@Required,@Autowired的属性已被注入 -->
+	<context:component-scan base-package="com.sky">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
+	</context:component-scan>
+
+	<!-- Jpa Entity Manager 配置 -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+		<property name="packagesToScan" value="com.sky.modules"/>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				<prop key="net.sf.ehcache.configurationResourceName">cache/ehcache-hibernate-local.xml</prop>
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform">
+			<bean factory-method="getDialect" class="com.sky.modules.core.orm.Hibernates">
+				<constructor-arg ref="dataSource"/>
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Spring Data Jpa配置 -->
+ 	<jpa:repositories base-package="com.sky" transaction-manager-ref="transactionManager" entity-manager-factory-ref="entityManagerFactory"/>
+	
+	
+	<!-- 事务管理器配置, Jpa单数据源事务 -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+
+	<!-- 另一个事务管理器, Jdbc单数据源事务 -->
+	<bean id="quartzTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="quartzDataSource" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+	
+	<!-- 定义aspectj -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+	<!-- hibernate validator -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	
+<!-- <bean id="termialFilter" class="com.sky.apps.action.office.filter.TermialFilter" />  -->
+	<!-- production环境 -->
+	<beans profile="production">
+ 		<context:property-placeholder ignore-unresolvable="true"
+			location="classpath*:/application.properties" />	
+		
+		<!-- 数据源配置, 使用DBCP数据库连接池 -->
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<!-- Connection Info -->
+			<property name="driverClassName" value="${jdbc.driver}" />
+			<property name="url" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+		 
+		<!--maxIdle: 最大空闲连接-->  
+		<property name="maxIdle" value="10"/>  
+		<property name="maxActive" value="260"></property>
+		  <property name="defaultAutoCommit" value="false" />
+			<!-- 连接Idle一个小时后超时 -->
+			<property name="timeBetweenEvictionRunsMillis" value="360000000" />
+			<property name="minEvictableIdleTimeMillis" value="360000000" />
+		 <property name="validationQuery" value="SELECT 1" />
+         <property name="testOnBorrow" value="true"/>
+	 
+		</bean>
+		
+ 
+ 
+		
+		
+		
+			<bean id="lotteryServiceMap" class="java.util.HashMap">
+		    <constructor-arg>
+			 <map>
+				<entry key="totterysScanner" value-ref="TotterysScanner"></entry> 
+			  </map>
+		   </constructor-arg>
+	       </bean>
+	       
+	       	
+			<bean id="guilvServiceMap" class="java.util.HashMap">
+		    <constructor-arg>
+			 <map>
+			 <entry key="guilvPeer6Scanner" value-ref="GuilvPeer6Scanner"></entry> 
+				<entry key="guilvPeer6Scanner2" value-ref="GuilvPeer6Scanner2"></entry> 
+			 	<entry key="guilvPeer3Scanner" value-ref="GuilvPeer3Scanner"></entry> 
+				<entry key="guilvPeer3Scanner2" value-ref="GuilvPeer3Scanner2"></entry> 
+				<entry key="guilvPeer3Scanner3" value-ref="GuilvPeer3Scanner3"></entry> 
+				<entry key="guilvPeer3Scanner4" value-ref="GuilvPeer3Scanner4"></entry> 
+				<entry key="guilvPeer3Scanner5" value-ref="GuilvPeer3Scanner5"></entry> 
+				<entry key="guilvPeer3Scanner6" value-ref="GuilvPeer3Scanner6"></entry> 
+				<entry key="guilvPeer3Scanner7" value-ref="GuilvPeer3Scanner7"></entry> 
+				<entry key="guilvPeer3Scanner8" value-ref="GuilvPeer3Scanner8"></entry> 
+				<entry key="guilvPeer3Scanner9" value-ref="GuilvPeer3Scanner9"></entry> 
+				<entry key="guilvPeer3Scanner10" value-ref="GuilvPeer3Scanner10"></entry> 
+				<entry key="guilvPeerScanner" value-ref="GuilvPeerScanner"></entry> 
+				<entry key="guilvPeerScanner2" value-ref="GuilvPeerScanner2"></entry> 
+				<entry key="guilvPeerScanner3" value-ref="GuilvPeerScanner3"></entry>
+				<entry key="guilvPeerScanner4" value-ref="GuilvPeerScanner4"></entry>
+				<entry key="guilvPeerScanner5" value-ref="GuilvPeerScanner5"></entry>
+				<entry key="guilvPeerScanner6" value-ref="GuilvPeerScanner6"></entry>
+				<entry key="guilvPeerScanner7" value-ref="GuilvPeerScanner7"></entry>
+				<entry key="guilvPeerScanner8" value-ref="GuilvPeerScanner8"></entry>
+				<entry key="guilvPeerScanner9" value-ref="GuilvPeerScanner9"></entry>
+				<entry key="guilvPeerScanner10" value-ref="GuilvPeerScanner10"></entry>
+				<entry key="guilvSameScanner" value-ref="GuilvSameScanner"></entry> 
+				<entry key="guilvSameScanner2" value-ref="GuilvSameScanner2"></entry> 
+				<entry key="guilvSameScanner3" value-ref="GuilvSameScanner3"></entry>
+				<entry key="guilvSameScanner4" value-ref="GuilvSameScanner4"></entry>
+				<entry key="guilvSameScanner5" value-ref="GuilvSameScanner5"></entry>
+				<entry key="guilvSameScanner6" value-ref="GuilvSameScanner6"></entry>
+				<entry key="guilvScanner" value-ref="GuilvScanner"></entry> 
+				<entry key="guilvScanner2" value-ref="GuilvScanner2"></entry> 
+				<entry key="guilvScanner3" value-ref="GuilvScanner3"></entry>
+				<entry key="guilvScanner4" value-ref="GuilvScanner4"></entry>
+				<entry key="guilvScanner5" value-ref="GuilvScanner5"></entry>
+				<entry key="guilvScanner6" value-ref="GuilvScanner6"></entry>
+				<entry key="guilvScanner7" value-ref="GuilvScanner7"></entry>
+				<entry key="guilvScanner8" value-ref="GuilvScanner8"></entry>
+				<entry key="guilvScanner9" value-ref="GuilvScanner9"></entry>
+				<entry key="guilvScanner10" value-ref="GuilvScanner10"></entry>
+				<entry key="guilvScanner11" value-ref="GuilvScanner11"></entry>
+				<entry key="guilvScanner12" value-ref="GuilvScanner12"></entry>
+				<entry key="guilvScopeScanner" value-ref="GuilvScopeScanner"></entry>
+				<entry key="guilvScopeScanner2" value-ref="GuilvScopeScanner2"></entry>
+				<entry key="guilvScopeScanner3" value-ref="GuilvScopeScanner3"></entry>
+				<entry key="guilvScopeScanner4" value-ref="GuilvScopeScanner4"></entry>
+				<entry key="guilvScopeScanner5" value-ref="GuilvScopeScanner5"></entry>
+				<entry key="guilvScopeScanner6" value-ref="GuilvScopeScanner6"></entry>
+				<entry key="guilvSingleDoubleScanner" value-ref="GuilvSingleDoubleScanner"></entry>
+				<entry key="guilvSingleDoubleScanner2" value-ref="GuilvSingleDoubleScanner2"></entry>
+				<entry key="guilvSingleDoubleScanner3" value-ref="GuilvSingleDoubleScanner3"></entry>
+				<entry key="guilvSingleDoubleScanner4" value-ref="GuilvSingleDoubleScanner4"></entry>
+				<entry key="guilvSingleDoubleScanner5" value-ref="GuilvSingleDoubleScanner5"></entry>
+				<entry key="guilvSingleDoubleScanner6" value-ref="GuilvSingleDoubleScanner6"></entry>
+				<entry key="guilvSizeScanner" value-ref="GuilvSizeScanner"></entry>
+				<entry key="guilvSizeScanner2" value-ref="GuilvSizeScanner2"></entry>
+				<entry key="guilvSizeScanner3" value-ref="GuilvSizeScanner3"></entry>
+				<entry key="guilvSizeScanner4" value-ref="GuilvSizeScanner4"></entry>
+				<entry key="guilvSizeScanner5" value-ref="GuilvSizeScanner5"></entry>
+				<entry key="guilvSizeScanner6" value-ref="GuilvSizeScanner6"></entry>
+				  
+				<entry key="pl5GuilvSameScanner" value-ref="Pl5GuilvSameScanner"></entry>
+				<entry key="pl5GuilvSameScanner2" value-ref="Pl5GuilvSameScanner2"></entry>
+				<entry key="pl5GuilvScanner" value-ref="Pl5GuilvScanner"></entry>
+				<entry key="pl5GuilvScopeScanner" value-ref="Pl5GuilvScopeScanner"></entry>
+				<entry key="pl5GuilvScopeScanner2" value-ref="Pl5GuilvScopeScanner2"></entry>
+				<entry key="pl5GuilvSingleDoubleScanner" value-ref="Pl5GuilvSingleDoubleScanner"></entry>
+				<entry key="pl5GuilvSingleDoubleScanner2" value-ref="Pl5GuilvSingleDoubleScanner2"></entry>
+				<entry key="pl5GuilvSizeScanner" value-ref="Pl5GuilvSizeScanner"></entry>
+				<entry key="pl5GuilvSizeScanner2" value-ref="Pl5GuilvSizeScanner2"></entry>
+                <entry key="pl5GuilvScanner3" value-ref="Pl5GuilvScanner3"></entry>
+				<entry key="pl5GuilvScanner2" value-ref="Pl5GuilvScanner2"></entry>  
+			  </map>
+		   </constructor-arg>
+	       </bean>
+	       
+	       <bean id="guilvsscServiceMap" class="java.util.HashMap">
+		    <constructor-arg>
+			 <map>
+			 <!-- 
+				 <entry key="cqsscGuilvScanner" value-ref="CqsscGuilvScanner"></entry> 
+				<entry key="tjsscGuilvScanner" value-ref="TjsscGuilvScanner"></entry> 
+				<entry key="xjsscGuilvScanner" value-ref="XjsscGuilvScanner"></entry>   
+				<entry key="cqGuilvPeer3Scanner" value-ref="CqGuilvPeer3Scanner"></entry> 
+				<entry key="cqGuilvPeer3Scanner3" value-ref="CqGuilvPeer3Scanner3"></entry> 
+				<entry key="cqGuilvPeer3Scanner2" value-ref="CqGuilvPeer3Scanner2"></entry> 
+				<entry key="cqGuilvPeer3Scanner4" value-ref="CqGuilvPeer3Scanner4"></entry>
+				<entry key="cqGuilvPeer3Scanner5" value-ref="CqGuilvPeer3Scanner5"></entry>
+				<entry key="cqGuilvPeer3Scanner6" value-ref="CqGuilvPeer3Scanner6"></entry>
+				<entry key="cqGuilvPeer3Scanner7" value-ref="CqGuilvPeer3Scanner7"></entry>
+				<entry key="cqGuilvPeer3Scanner8" value-ref="CqGuilvPeer3Scanner8"></entry>
+				<entry key="cqGuilvPeer3Scanner9" value-ref="CqGuilvPeer3Scanner9"></entry>
+				<entry key="cqGuilvPeer3Scanner10" value-ref="CqGuilvPeer3Scanner10"></entry>
+				<entry key="cqGuilvPeer3Scanner11" value-ref="CqGuilvPeer3Scanner11"></entry>
+				<entry key="cqGuilvPeer3Scanner12" value-ref="CqGuilvPeer3Scanner12"></entry>
+				<entry key="cqGuilvPeer3Scanner13" value-ref="CqGuilvPeer3Scanner13"></entry>
+				<entry key="cqGuilvPeer3Scanner14" value-ref="CqGuilvPeer3Scanner14"></entry>
+				<entry key="cqGuilvPeer3Scanner15" value-ref="CqGuilvPeer3Scanner15"></entry>
+				<entry key="cqGuilvPeer3Scanner16" value-ref="CqGuilvPeer3Scanner16"></entry>
+				<entry key="cqGuilvPeer3Scanner17" value-ref="CqGuilvPeer3Scanner17"></entry>
+				<entry key="cqGuilvPeer3Scanner18" value-ref="CqGuilvPeer3Scanner18"></entry>
+				<entry key="cqGuilvPeer3Scanner19" value-ref="CqGuilvPeer3Scanner19"></entry>
+				<entry key="cqGuilvPeer3Scanner20" value-ref="CqGuilvPeer3Scanner20"></entry>
+				
+				<entry key="cqGuilvPeerScanner" value-ref="CqGuilvPeerScanner"></entry> 
+				<entry key="cqGuilvPeerScanner2" value-ref="CqGuilvPeerScanner2"></entry>
+				<entry key="cqGuilvPeerScanner3" value-ref="CqGuilvPeerScanner3"></entry>
+				<entry key="cqGuilvPeerScanner4" value-ref="CqGuilvPeerScanner4"></entry>
+				<entry key="cqGuilvPeerScanner5" value-ref="CqGuilvPeerScanner5"></entry>
+				<entry key="cqGuilvPeerScanner6" value-ref="CqGuilvPeerScanner6"></entry>
+				<entry key="cqGuilvPeerScanner7" value-ref="CqGuilvPeerScanner7"></entry>
+				<entry key="cqGuilvPeerScanner8" value-ref="CqGuilvPeerScanner8"></entry>
+				<entry key="cqGuilvPeerScanner9" value-ref="CqGuilvPeerScanner9"></entry>
+				<entry key="cqGuilvPeerScanner10" value-ref="CqGuilvPeerScanner10"></entry>
+				<entry key="cqGuilvPeerScanner11" value-ref="CqGuilvPeerScanner11"></entry>
+				<entry key="cqGuilvPeerScanner12" value-ref="CqGuilvPeerScanner12"></entry>
+				<entry key="cqGuilvPeerScanner13" value-ref="CqGuilvPeerScanner13"></entry>
+				<entry key="cqGuilvPeerScanner14" value-ref="CqGuilvPeerScanner14"></entry>
+				<entry key="cqGuilvPeerScanner15" value-ref="CqGuilvPeerScanner15"></entry>
+				<entry key="cqGuilvPeerScanner16" value-ref="CqGuilvPeerScanner16"></entry>
+				<entry key="cqGuilvPeerScanner17" value-ref="CqGuilvPeerScanner17"></entry>
+				
+				
+				
+				 <entry key="cqGuilvSameScanner" value-ref="CqGuilvSameScanner"></entry> 
+				  <entry key="cqGuilvSameScanner2" value-ref="CqGuilvSameScanner2"></entry> 
+				  <entry key="cqGuilvSameScanner3" value-ref="CqGuilvSameScanner3"></entry> 
+				   <entry key="cqGuilvSameScanner4" value-ref="CqGuilvSameScanner4"></entry> 
+				    <entry key="cqGuilvSameScanner5" value-ref="CqGuilvSameScanner5"></entry> 
+				     <entry key="cqGuilvSameScanner6" value-ref="CqGuilvSameScanner6"></entry> 
+				    <entry key="cqGuilvSameScanner7" value-ref="CqGuilvSameScanner7"></entry>  
+				     <entry key="cqGuilvSameScanner8" value-ref="CqGuilvSameScanner8"></entry> 
+				     <entry key="cqGuilvSameScanner9" value-ref="CqGuilvSameScanner9"></entry> 
+				     <entry key="cqGuilvSameScanner10" value-ref="CqGuilvSameScanner10"></entry> 
+				     <entry key="cqGuilvSameScanner11" value-ref="CqGuilvSameScanner11"></entry>  
+				      <entry key="cqGuilvSameScanner12" value-ref="CqGuilvSameScanner12"></entry> 
+				      <entry key="cqGuilvSameScanner13" value-ref="CqGuilvSameScanner13"></entry> 
+				      <entry key="cqGuilvSameScanner14" value-ref="CqGuilvSameScanner14"></entry> 
+				      <entry key="cqGuilvSameScanner15" value-ref="CqGuilvSameScanner15"></entry> 
+				      <entry key="cqGuilvSameScanner16" value-ref="CqGuilvSameScanner16"></entry> 
+				      <entry key="cqGuilvSameScanner17" value-ref="CqGuilvSameScanner17"></entry> 
+				      <entry key="cqGuilvSameScanner18" value-ref="CqGuilvSameScanner18"></entry> 
+				      <entry key="cqGuilvSameScanner19" value-ref="CqGuilvSameScanner19"></entry> 
+				      <entry key="cqGuilvSameScanner20" value-ref="CqGuilvSameScanner20"></entry> 
+				       <entry key="cqGuilvSameScanner21" value-ref="CqGuilvSameScanner21"></entry> 
+				       <entry key="cqGuilvSameScanner22" value-ref="CqGuilvSameScanner22"></entry> 
+				       <entry key="cqGuilvSameScanner23" value-ref="CqGuilvSameScanner23"></entry> 
+				       <entry key="cqGuilvSameScanner24" value-ref="CqGuilvSameScanner24"></entry> 
+				       <entry key="cqGuilvSameScanner25" value-ref="CqGuilvSameScanner25"></entry> 
+				       <entry key="cqGuilvSameScanner26" value-ref="CqGuilvSameScanner26"></entry> 
+				       <entry key="cqGuilvSameScanner27" value-ref="CqGuilvSameScanner27"></entry> 
+				       <entry key="cqGuilvSameScanner28" value-ref="CqGuilvSameScanner28"></entry> 
+				       <entry key="cqGuilvSameScanner29" value-ref="CqGuilvSameScanner29"></entry> 
+				       <entry key="cqGuilvSameScanner30" value-ref="CqGuilvSameScanner30"></entry> 
+				        <entry key="cqGuilvSameScanner31" value-ref="CqGuilvSameScanner31"></entry> 
+				        <entry key="cqGuilvSameScanner32" value-ref="CqGuilvSameScanner32"></entry> 
+				        <entry key="cqGuilvSameScanner33" value-ref="CqGuilvSameScanner33"></entry> 
+				        <entry key="cqGuilvSameScanner34" value-ref="CqGuilvSameScanner34"></entry> 
+				        <entry key="cqGuilvSameScanner35" value-ref="CqGuilvSameScanner35"></entry> 
+				          <entry key="cqGuilvSameScanner36" value-ref="CqGuilvSameScanner36"></entry> 
+				          <entry key="cqGuilvSameScanner37" value-ref="CqGuilvSameScanner37"></entry> 
+				       <entry key="cqGuilvSameScanner38" value-ref="CqGuilvSameScanner38"></entry> 
+				         <entry key="cqGuilvSameScanner39" value-ref="CqGuilvSameScanner39"></entry> 
+				           <entry key="cqGuilvSameScanner40" value-ref="CqGuilvSameScanner40"></entry> 
+				         
+				     
+				     <entry key="cqGuilvScanner" value-ref="CqGuilvScanner"></entry>
+				     <entry key="cqGuilvScanner2" value-ref="CqGuilvScanner2"></entry>
+				      <entry key="cqGuilvScanner3" value-ref="CqGuilvScanner3"></entry>
+				       <entry key="cqGuilvScanner4" value-ref="CqGuilvScanner4"></entry>
+				       <entry key="cqGuilvScanner5" value-ref="CqGuilvScanner5"></entry>
+				        <entry key="cqGuilvScanner6" value-ref="CqGuilvScanner6"></entry>
+				         <entry key="cqGuilvScanner7" value-ref="CqGuilvScanner7"></entry>
+				          <entry key="cqGuilvScanner8" value-ref="CqGuilvScanner8"></entry>
+				           <entry key="cqGuilvScanner9" value-ref="CqGuilvScanner9"></entry>
+				           <entry key="cqGuilvScanner10" value-ref="CqGuilvScanner10"></entry>
+				          <entry key="cqGuilvScanner11" value-ref="CqGuilvScanner11"></entry>
+				          <entry key="cqGuilvScanner12" value-ref="CqGuilvScanner12"></entry>
+				          <entry key="cqGuilvScanner13" value-ref="CqGuilvScanner13"></entry>
+				          <entry key="cqGuilvScanner14" value-ref="CqGuilvScanner14"></entry>
+				          <entry key="cqGuilvScanner15" value-ref="CqGuilvScanner15"></entry>
+				          <entry key="cqGuilvScanner16" value-ref="CqGuilvScanner16"></entry>
+				          <entry key="cqGuilvScanner17" value-ref="CqGuilvScanner17"></entry>
+				          <entry key="cqGuilvScanner18" value-ref="CqGuilvScanner18"></entry>
+				          <entry key="cqGuilvScanner19" value-ref="CqGuilvScanner19"></entry>
+				          <entry key="cqGuilvScanner20" value-ref="CqGuilvScanner20"></entry>
+				         <entry key="cqGuilvScanner21" value-ref="CqGuilvScanner21"></entry> 
+				          <entry key="cqGuilvScanner22" value-ref="CqGuilvScanner22"></entry>
+				          <entry key="cqGuilvScanner23" value-ref="CqGuilvScanner23"></entry>
+				          <entry key="cqGuilvScanner24" value-ref="CqGuilvScanner24"></entry>
+				          <entry key="cqGuilvScanner25" value-ref="CqGuilvScanner25"></entry>
+				          <entry key="cqGuilvScanner26" value-ref="CqGuilvScanner26"></entry>
+				          <entry key="cqGuilvScanner27" value-ref="CqGuilvScanner27"></entry>
+				          <entry key="cqGuilvScanner28" value-ref="CqGuilvScanner28"></entry>
+				          <entry key="cqGuilvScanner29" value-ref="CqGuilvScanner29"></entry>
+				          <entry key="cqGuilvScanner30" value-ref="CqGuilvScanner30"></entry>
+				          <entry key="cqGuilvScanner31" value-ref="CqGuilvScanner31"></entry>
+				          <entry key="cqGuilvScanner32" value-ref="CqGuilvScanner32"></entry>
+				          <entry key="cqGuilvScanner33" value-ref="CqGuilvScanner33"></entry>
+				          <entry key="cqGuilvScanner34" value-ref="CqGuilvScanner34"></entry>
+				          <entry key="cqGuilvScanner35" value-ref="CqGuilvScanner35"></entry>
+				          <entry key="cqGuilvScanner36" value-ref="CqGuilvScanner36"></entry>
+				          <entry key="cqGuilvScanner37" value-ref="CqGuilvScanner37"></entry>
+				          <entry key="cqGuilvScanner38" value-ref="CqGuilvScanner38"></entry>
+				          <entry key="cqGuilvScanner39" value-ref="CqGuilvScanner39"></entry>
+				          <entry key="cqGuilvScanner40" value-ref="CqGuilvScanner40"></entry>
+				          <entry key="cqGuilvScanner41" value-ref="CqGuilvScanner41"></entry>
+				          <entry key="cqGuilvScanner42" value-ref="CqGuilvScanner42"></entry>
+				          <entry key="cqGuilvScanner43" value-ref="CqGuilvScanner43"></entry>
+				          <entry key="cqGuilvScanner44" value-ref="CqGuilvScanner44"></entry>
+				          <entry key="cqGuilvScanner45" value-ref="CqGuilvScanner45"></entry>
+				          <entry key="cqGuilvScanner46" value-ref="CqGuilvScanner46"></entry>
+				          <entry key="cqGuilvScanner47" value-ref="CqGuilvScanner47"></entry>
+				          <entry key="cqGuilvScanner48" value-ref="CqGuilvScanner48"></entry>
+				          <entry key="cqGuilvScanner49" value-ref="CqGuilvScanner49"></entry>
+				          <entry key="cqGuilvScanner50" value-ref="CqGuilvScanner50"></entry>
+				          <entry key="cqGuilvScanner51" value-ref="CqGuilvScanner51"></entry>
+				         <entry key="cqGuilvScanner52" value-ref="CqGuilvScanner52"></entry>    
+				          <entry key="cqGuilvScanner53" value-ref="CqGuilvScanner53"></entry>   
+				          <entry key="cqGuilvScanner54" value-ref="CqGuilvScanner54"></entry>
+				          <entry key="cqGuilvScanner55" value-ref="CqGuilvScanner55"></entry>
+				          <entry key="cqGuilvScanner56" value-ref="CqGuilvScanner56"></entry>
+				          <entry key="cqGuilvScanner57" value-ref="CqGuilvScanner57"></entry>
+				          <entry key="cqGuilvScanner58" value-ref="CqGuilvScanner58"></entry>
+				          <entry key="cqGuilvScanner59" value-ref="CqGuilvScanner59"></entry>
+				          <entry key="cqGuilvScanner60" value-ref="CqGuilvScanner60"></entry>
+				          <entry key="cqGuilvScanner61" value-ref="CqGuilvScanner61"></entry>
+				          <entry key="cqGuilvScanner62" value-ref="CqGuilvScanner62"></entry>
+				          <entry key="cqGuilvScanner63" value-ref="CqGuilvScanner63"></entry>
+				          <entry key="cqGuilvScanner64" value-ref="CqGuilvScanner64"></entry>
+				          <entry key="cqGuilvScanner65" value-ref="CqGuilvScanner65"></entry>
+				          <entry key="cqGuilvScanner66" value-ref="CqGuilvScanner66"></entry>
+				          <entry key="cqGuilvScanner67" value-ref="CqGuilvScanner67"></entry>
+				          <entry key="cqGuilvScanner68" value-ref="CqGuilvScanner68"></entry>
+				          <entry key="cqGuilvScanner69" value-ref="CqGuilvScanner69"></entry>
+				          <entry key="cqGuilvScanner70" value-ref="CqGuilvScanner70"></entry>
+				          <entry key="cqGuilvScanner71" value-ref="CqGuilvScanner71"></entry>
+				         <entry key="cqGuilvScanner72" value-ref="CqGuilvScanner72"></entry>  
+				          <entry key="cqGuilvScanner73" value-ref="CqGuilvScanner73"></entry>
+				          <entry key="cqGuilvScanner74" value-ref="CqGuilvScanner74"></entry>
+				          <entry key="cqGuilvScanner75" value-ref="CqGuilvScanner75"></entry>
+				          <entry key="cqGuilvScanner76" value-ref="CqGuilvScanner76"></entry>
+				          <entry key="cqGuilvScanner77" value-ref="CqGuilvScanner77"></entry>
+				          <entry key="cqGuilvScanner78" value-ref="CqGuilvScanner78"></entry>
+				          <entry key="cqGuilvScanner79" value-ref="CqGuilvScanner79"></entry>
+				          <entry key="cqGuilvScanner80" value-ref="CqGuilvScanner80"></entry>
+				          <entry key="cqGuilvScanner81" value-ref="CqGuilvScanner81"></entry>
+				          <entry key="cqGuilvScanner82" value-ref="CqGuilvScanner82"></entry>
+				          <entry key="cqGuilvScanner83" value-ref="CqGuilvScanner83"></entry>
+				          <entry key="cqGuilvScanner84" value-ref="CqGuilvScanner84"></entry>
+				          <entry key="cqGuilvScanner85" value-ref="CqGuilvScanner85"></entry>
+				          <entry key="cqGuilvScanner86" value-ref="CqGuilvScanner86"></entry>
+				          <entry key="cqGuilvScanner87" value-ref="CqGuilvScanner87"></entry>
+				          <entry key="cqGuilvScanner88" value-ref="CqGuilvScanner88"></entry>
+				          <entry key="cqGuilvScanner89" value-ref="CqGuilvScanner89"></entry>
+				          <entry key="cqGuilvScanner90" value-ref="CqGuilvScanner90"></entry>
+				          <entry key="cqGuilvScanner91" value-ref="CqGuilvScanner91"></entry>
+				          <entry key="cqGuilvScanner92" value-ref="CqGuilvScanner92"></entry>
+				          <entry key="cqGuilvScanner93" value-ref="CqGuilvScanner93"></entry>
+				          <entry key="cqGuilvScanner94" value-ref="CqGuilvScanner94"></entry>
+				          <entry key="cqGuilvScanner95" value-ref="CqGuilvScanner95"></entry>
+				          <entry key="cqGuilvScanner96" value-ref="CqGuilvScanner96"></entry>
+				          <entry key="cqGuilvScanner97" value-ref="CqGuilvScanner97"></entry>
+				          <entry key="cqGuilvScanner98" value-ref="CqGuilvScanner98"></entry>
+				          <entry key="cqGuilvScanner99" value-ref="CqGuilvScanner99"></entry>
+				          <entry key="cqGuilvScanner100" value-ref="CqGuilvScanner100"></entry>
+				          <entry key="cqGuilvScanner101" value-ref="CqGuilvScanner101"></entry>
+				          <entry key="cqGuilvScanner102" value-ref="CqGuilvScanner102"></entry>
+				          <entry key="cqGuilvScanner103" value-ref="CqGuilvScanner103"></entry>
+				          <entry key="cqGuilvScanner104" value-ref="CqGuilvScanner104"></entry>
+				          <entry key="cqGuilvScanner105" value-ref="CqGuilvScanner105"></entry>
+				          <entry key="cqGuilvScanner106" value-ref="CqGuilvScanner106"></entry>
+				          <entry key="cqGuilvScanner107" value-ref="CqGuilvScanner107"></entry>
+				          <entry key="cqGuilvScanner108" value-ref="CqGuilvScanner108"></entry>
+				          <entry key="cqGuilvScanner109" value-ref="CqGuilvScanner109"></entry>
+				          <entry key="cqGuilvScanner110" value-ref="CqGuilvScanner110"></entry>
+				          <entry key="cqGuilvScanner111" value-ref="CqGuilvScanner111"></entry>
+				          <entry key="cqGuilvScanner112" value-ref="CqGuilvScanner112"></entry>
+				          <entry key="cqGuilvScanner113" value-ref="CqGuilvScanner113"></entry>
+				          <entry key="cqGuilvScanner114" value-ref="CqGuilvScanner114"></entry>
+				          <entry key="cqGuilvScanner115" value-ref="CqGuilvScanner115"></entry>
+				          <entry key="cqGuilvScanner116" value-ref="CqGuilvScanner116"></entry>
+				          <entry key="cqGuilvScanner117" value-ref="CqGuilvScanner117"></entry>
+				          <entry key="cqGuilvScanner118" value-ref="CqGuilvScanner118"></entry>
+				          <entry key="cqGuilvScanner119" value-ref="CqGuilvScanner119"></entry>
+				          
+				          <entry key="cqGuilvScanner200" value-ref="CqGuilvScanner200"></entry>
+				          <entry key="cqGuilvScanner201" value-ref="CqGuilvScanner201"></entry>
+				          <entry key="cqGuilvScanner202" value-ref="CqGuilvScanner202"></entry>
+				          <entry key="cqGuilvScanner203" value-ref="CqGuilvScanner203"></entry>
+				          <entry key="cqGuilvScanner204" value-ref="CqGuilvScanner204"></entry>
+				          <entry key="cqGuilvScanner205" value-ref="CqGuilvScanner205"></entry>
+				          <entry key="cqGuilvScanner206" value-ref="CqGuilvScanner206"></entry>
+				          <entry key="cqGuilvScanner207" value-ref="CqGuilvScanner207"></entry>
+				          <entry key="cqGuilvScanner208" value-ref="CqGuilvScanner208"></entry>
+				          <entry key="cqGuilvScanner209" value-ref="CqGuilvScanner209"></entry>
+				          <entry key="cqGuilvScanner210" value-ref="CqGuilvScanner210"></entry>
+				          <entry key="cqGuilvScanner211" value-ref="CqGuilvScanner211"></entry>
+				          <entry key="cqGuilvScanner212" value-ref="CqGuilvScanner212"></entry>
+				          <entry key="cqGuilvScanner213" value-ref="CqGuilvScanner213"></entry>
+				          <entry key="cqGuilvScanner214" value-ref="CqGuilvScanner214"></entry>
+				          <entry key="cqGuilvScanner215" value-ref="CqGuilvScanner215"></entry>
+				          <entry key="cqGuilvScanner216" value-ref="CqGuilvScanner216"></entry>
+				          <entry key="cqGuilvScanner217" value-ref="CqGuilvScanner217"></entry>
+				          <entry key="cqGuilvScanner218" value-ref="CqGuilvScanner218"></entry>
+				          <entry key="cqGuilvScanner219" value-ref="CqGuilvScanner219"></entry>
+				          <entry key="cqGuilvScanner220" value-ref="CqGuilvScanner220"></entry>
+				          
+				          
+				          
+				          
+				          
+				          
+				          <entry key="cqGuilvScopeScanner" value-ref="CqGuilvScopeScanner"></entry> 
+				          <entry key="cqGuilvScopeScanner2" value-ref="CqGuilvScopeScanner2"></entry> 
+				          <entry key="cqGuilvScopeScanner3" value-ref="CqGuilvScopeScanner3"></entry> 
+				          <entry key="cqGuilvScopeScanner4" value-ref="CqGuilvScopeScanner4"></entry> 
+				          <entry key="cqGuilvScopeScanner5" value-ref="CqGuilvScopeScanner5"></entry> 
+				          <entry key="cqGuilvScopeScanner6" value-ref="CqGuilvScopeScanner6"></entry>
+				          <entry key="cqGuilvScopeScanner7" value-ref="CqGuilvScopeScanner7"></entry>
+				          <entry key="cqGuilvScopeScanner8" value-ref="CqGuilvScopeScanner8"></entry>
+				          <entry key="cqGuilvScopeScanner9" value-ref="CqGuilvScopeScanner9"></entry>
+				          <entry key="cqGuilvScopeScanner10" value-ref="CqGuilvScopeScanner10"></entry>
+				          <entry key="cqGuilvScopeScanner11" value-ref="CqGuilvScopeScanner11"></entry>
+				          <entry key="cqGuilvScopeScanner12" value-ref="CqGuilvScopeScanner12"></entry>
+				          <entry key="cqGuilvScopeScanner13" value-ref="CqGuilvScopeScanner13"></entry>
+				          <entry key="cqGuilvScopeScanner14" value-ref="CqGuilvScopeScanner14"></entry>
+				          <entry key="cqGuilvScopeScanner15" value-ref="CqGuilvScopeScanner15"></entry>
+				          <entry key="cqGuilvScopeScanner16" value-ref="CqGuilvScopeScanner16"></entry>
+				          <entry key="cqGuilvScopeScanner17" value-ref="CqGuilvScopeScanner17"></entry>
+				          <entry key="cqGuilvScopeScanner18" value-ref="CqGuilvScopeScanner18"></entry>
+				          
+				          
+				          
+				          <entry key="cqGuilvSingleDoubleScanner" value-ref="CqGuilvSingleDoubleScanner"></entry> 
+				          <entry key="cqGuilvSingleDoubleScanner2" value-ref="CqGuilvSingleDoubleScanner2"></entry> 
+				          <entry key="cqGuilvSingleDoubleScanner3" value-ref="CqGuilvSingleDoubleScanner3"></entry> 
+				           <entry key="cqGuilvSingleDoubleScanner4" value-ref="CqGuilvSingleDoubleScanner4"></entry>
+				            <entry key="cqGuilvSingleDoubleScanner5" value-ref="CqGuilvSingleDoubleScanner5"></entry>
+				            <entry key="cqGuilvSingleDoubleScanner6" value-ref="CqGuilvSingleDoubleScanner6"></entry> 
+				            <entry key="cqGuilvSingleDoubleScanner7" value-ref="CqGuilvSingleDoubleScanner7"></entry>
+				            <entry key="cqGuilvSingleDoubleScanner8" value-ref="CqGuilvSingleDoubleScanner8"></entry> 
+				            
+				            
+				             <entry key="cqGuilvSizeScanner" value-ref="CqGuilvSizeScanner"></entry> 
+				          <entry key="cqGuilvSizeScanner2" value-ref="CqGuilvSizeScanner2"></entry> 
+				          <entry key="cqGuilvSizeScanner3" value-ref="CqGuilvSizeScanner3"></entry> 
+				           <entry key="cqGuilvSizeScanner4" value-ref="CqGuilvSizeScanner4"></entry>
+				            <entry key="cqGuilvSizeScanner5" value-ref="CqGuilvSizeScanner5"></entry>
+				            <entry key="cqGuilvSizeScanner6" value-ref="CqGuilvSizeScanner6"></entry> 
+				            <entry key="cqGuilvSizeScanner7" value-ref="CqGuilvSizeScanner7"></entry>
+				            <entry key="cqGuilvSizeScanner8" value-ref="CqGuilvSizeScanner8"></entry>
+				             -->
+				<!-- 
+				
+				
+				   -->
+ </map>
+		   </constructor-arg>
+	       </bean>
+	</beans>
+
+    
+ 
+	 
+ 
+</beans>

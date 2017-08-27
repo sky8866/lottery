@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+  <wb-module deploy-name="lottery-web">
+        <dependent-module archiveName="lottery-user-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lottery-user/lottery-user">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lottery-userweb-1.0.0-GA.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lottery-userweb/lottery-userweb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lottery-guilv-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lottery-guilv/lottery-guilv">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lottery-guilvweb-1.0.0-GA.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lottery-guilvweb/lottery-guilvweb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lottery-weixin-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lottery-weixin/lottery-weixin">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/lottery-web/src/main/webapp/src/main/java"/>
+        <property name="context-root" value="/lottery-web"/>
+    <wb-resource deploy-path="/" source-path="src/main/webapp"/>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/java"/>
+    <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
+  </wb-module>
+</project-modules>
